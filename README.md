@@ -18,27 +18,3 @@ Flask ve Microsoft SQL Server kullanılarak geliştirilmiş, hastane operasyonla
 * **Raporlama:** OpenPyXL (Excel entegrasyonu)
 * **Frontend:** Bootstrap 5, Chart.js, HTML5/CSS3
 
-## Kurulum
-
-1. Depoyu klonlayın:
-```bash
-git clone https://github.com/kullaniciadi/dis-hastanesi-sistemi.git
-cd dis-hastanesi-sistemi
-
-```
-
-
-2. Gerekli kütüphaneleri yükleyin:
-```bash
-pip install flask pyodbc openpyxl
-
-```
-
-
-3. SQL Server üzerinde `DISHASTANESI` veritabanını oluşturun ve gerekli tabloları tanımlayın.
-4. Uygulamayı çalıştırın:
-```bash
-python app.py
-
-```
-
