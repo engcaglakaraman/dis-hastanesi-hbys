@@ -1,3 +1,4 @@
+import os
 import random
 import string
 import io
@@ -7,8 +8,14 @@ from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 from flask import Flask, render_template_string, request, redirect, url_for, flash, send_file
 
 app = Flask(__name__)
-app.secret_key = 'dishastanesi_tam_sistem_gizli_anahtar'
 
+# GÜVENLİK DÜZELTMESİ: Gizli anahtar artık doğrudan koda yazılmıyor.
+# Bilgisayarındaki ortam değişkenlerinden (environment variable) okunur. 
+# Eğer ortam değişkeni tanımlı değilse, uygulama başlarken rastgele güvenli bir anahtar üretir.
+app.secret_key = os.environ.get('SECRET_KEY') or os.urandom(24).hex()
+
+# Not: Veritabanı bağlantı bilgilerini de (şifre ekleyeceğin durumlarda) 
+# ileride buraya yazmak yerine os.environ ile çekmen önerilir.
 CONN_STR = (
     r"DRIVER={ODBC Driver 17 for SQL Server};"
     r"SERVER=localhost;"
@@ -1946,11 +1953,11 @@ def index():
     conn.close()
 
     content = render_template_string(INDEX_CONTENT, 
-                                     hekimler=hekimler, 
-                                     toplam_hasta=toplam_hasta, 
-                                     bugunku_randevu=bugunku_randevu,
-                                     kritik_stok_sayisi=kritik_stok_sayisi,
-                                     toplam_tedavi_sayisi=toplam_tedavi_sayisi)
+                                   hekimler=hekimler, 
+                                   toplam_hasta=toplam_hasta, 
+                                   bugunku_randevu=bugunku_randevu,
+                                   kritik_stok_sayisi=kritik_stok_sayisi,
+                                   toplam_tedavi_sayisi=toplam_tedavi_sayisi)
     return render_template_string(BASE_HTML, content=content)
 
 @app.route('/kasa-raporlari')
@@ -2033,20 +2040,20 @@ def kasa_raporlari():
     conn.close()
 
     content = render_template_string(KASA_RAPORLARI_CONTENT, 
-                                     gunluk_tutar=gunluk_tutar,
-                                     gunluk_adet=gunluk_adet,
-                                     haftalik_tutar=haftalik_tutar, 
-                                     haftalik_adet=haftalik_adet,
-                                     aylik_tutar=aylik_tutar, 
-                                     aylik_adet=aylik_adet,
-                                     odemeler=odemeler,
-                                     aktif_filtre=filtre,
-                                     filtre_aciklama=filtre_aciklama,
-                                     filtrelenen_toplam=filtrelenen_toplam,
-                                     baslangic=baslangic,
-                                     bitis=bitis,
-                                     grafik_etiketleri=grafik_etiketleri,
-                                     grafik_verileri=grafik_verileri)
+                                   gunluk_tutar=gunluk_tutar,
+                                   gunluk_adet=gunluk_adet,
+                                   haftalik_tutar=haftalik_tutar, 
+                                   haftalik_adet=haftalik_adet,
+                                   aylik_tutar=aylik_tutar, 
+                                   aylik_adet=aylik_adet,
+                                   odemeler=odemeler,
+                                   aktif_filtre=filtre,
+                                   filtre_aciklama=filtre_aciklama,
+                                   filtrelenen_toplam=filtrelenen_toplam,
+                                   baslangic=baslangic,
+                                   bitis=bitis,
+                                   grafik_etiketleri=grafik_etiketleri,
+                                   grafik_verileri=grafik_verileri)
     return render_template_string(BASE_HTML, content=content)
 
 @app.route('/kasa-raporlari/z-raporu')
@@ -2214,9 +2221,9 @@ def hekim_performans_raporu():
     conn.close()
 
     content = render_template_string(HEKIM_PERFORMANS_CONTENT,
-                                     hekim_performans=hekim_performans,
-                                     toplam_ciro=toplam_ciro,
-                                     lider_hekim=lider_hekim)
+                                   hekim_performans=hekim_performans,
+                                   toplam_ciro=toplam_ciro,
+                                   lider_hekim=lider_hekim)
     return render_template_string(BASE_HTML, content=content)
 
 @app.route('/odeme-makbuz/<int:odeme_id>')
@@ -2572,15 +2579,15 @@ def hasta_detay(hasta_id):
     conn.close()
 
     content = render_template_string(HASTA_DETAY_CONTENT, 
-                                     hasta=hasta, 
-                                     planlar=planlar,
-                                     tedaviler=tedaviler, 
-                                     odemeler=odemeler,
-                                     toplam_tedavi_tutari=toplam_tedavi_tutari,
-                                     toplam_odenen=toplam_odenen,
-                                     kalan_borc=kalan_borc,
-                                     dis_islemleri=dis_islemleri, 
-                                     tum_hekimler=tum_hekimler)
+                                   hasta=hasta, 
+                                   planlar=planlar,
+                                   tedaviler=tedaviler, 
+                                   odemeler=odemeler,
+                                   toplam_tedavi_tutari=toplam_tedavi_tutari,
+                                   toplam_odenen=toplam_odenen,
+                                   kalan_borc=kalan_borc,
+                                   dis_islemleri=dis_islemleri, 
+                                   tum_hekimler=tum_hekimler)
     return render_template_string(BASE_HTML, content=content)
 
 @app.route('/hasta/<int:hasta_id>/plan-ekle', methods=['POST'])
@@ -2802,7 +2809,6 @@ def hekim_randevulari(hekim_id):
     content = render_template_string(RANDEVULAR_CONTENT, hekim=hekim, randevular=randevular)
     return render_template_string(BASE_HTML, content=content)
 
-# YENİ ÖZELLİK: GÜNLÜK TOPLU RANDEVU HATIRLATMA ÖZETİ
 @app.route('/hekim/<int:hekim_id>/bugun-ozet-gonder')
 def bugun_ozet_gonder(hekim_id):
     conn = get_db()
@@ -2959,3 +2965,6 @@ def randevu_ekle():
 
     content = render_template_string(YENI_RANDEVU_CONTENT, hastalar=hastalar, hekimler=hekimler)
     return render_template_string(BASE_HTML, content=content)
+
+if __name__ == '__main__':
+    app.run(debug=True)
