@@ -9,13 +9,8 @@ from flask import Flask, render_template_string, request, redirect, url_for, fla
 
 app = Flask(__name__)
 
-# GÜVENLİK DÜZELTMESİ: Gizli anahtar artık doğrudan koda yazılmıyor.
-# Bilgisayarındaki ortam değişkenlerinden (environment variable) okunur. 
-# Eğer ortam değişkeni tanımlı değilse, uygulama başlarken rastgele güvenli bir anahtar üretir.
 app.secret_key = os.environ.get('SECRET_KEY') or os.urandom(24).hex()
 
-# Not: Veritabanı bağlantı bilgilerini de (şifre ekleyeceğin durumlarda) 
-# ileride buraya yazmak yerine os.environ ile çekmen önerilir.
 CONN_STR = (
     r"DRIVER={ODBC Driver 17 for SQL Server};"
     r"SERVER=localhost;"
